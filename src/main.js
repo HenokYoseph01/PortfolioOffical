@@ -124,3 +124,34 @@ toolViewport.addEventListener('pointerdown', pauseForManualScroll, { passive: tr
 toolViewport.addEventListener('wheel', event => { if (Math.abs(event.deltaX) > 0) pauseForManualScroll(); }, { passive: true });
 reducedMotion.addEventListener('change', syncToolMotion);
 syncToolMotion();
+
+// Each decorative mark draws once when it becomes visible. Content never waits.
+const doodles = [...document.querySelectorAll('[data-doodle]')];
+if ('IntersectionObserver' in window && !reducedMotion.matches) {
+  doodles.forEach(doodle => {
+    doodle.querySelectorAll('path').forEach((path, index) => {
+      path.setAttribute('pathLength', '1');
+      path.style.setProperty('--stroke-delay', `${index * 0.15}s`);
+    });
+    doodle.classList.add('doodle-pending');
+  });
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('doodle-visible');
+      observer.unobserve(entry.target);
+    });
+  }, { threshold: 0.5, rootMargin: '0px 0px -8% 0px' });
+  // Let the intro clear before drawing any marks already above the fold.
+  const startTimer = setTimeout(() => {
+    if (!reducedMotion.matches) doodles.forEach(doodle => observer.observe(doodle));
+  }, Math.max(0, 1750 - performance.now()));
+  const stopDoodleMotion = event => {
+    if (!event.matches) return;
+    clearTimeout(startTimer);
+    observer.disconnect();
+    doodles.forEach(doodle => doodle.classList.remove('doodle-pending', 'doodle-visible'));
+    reducedMotion.removeEventListener('change', stopDoodleMotion);
+  };
+  reducedMotion.addEventListener('change', stopDoodleMotion);
+}

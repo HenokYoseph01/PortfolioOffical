@@ -82,12 +82,27 @@ body:focus-within .splash{display:none}
 .ink-doodle{color:var(--accent);pointer-events:none}
 .ink-doodle svg path,.ink-doodle path,.ink-underline path,.ink-circle path{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
 .hero-note.ink-doodle{width:250px;transform:rotate(-6deg);color:#a3bbdf;margin-right:22px}
-.hero-note.ink-doodle svg{width:220px;overflow:visible}.hero-note .doodle-ghost{opacity:.18;stroke-width:1}.hero-note .doodle-draw{stroke-dasharray:1;animation:ink-arrive 1.4s ease-out 1.8s backwards}
+.hero-note.ink-doodle svg{width:220px;overflow:visible}.hero-note .doodle-ghost{opacity:.18;stroke-width:1}
 .hero-note .doodle-note{display:block;margin-top:10px;font-size:8px;letter-spacing:.5px;color:#859abb;transform:rotate(3deg)}
 .ink-underline,.ink-circle{position:relative;display:inline-block}
 .ink-underline svg{position:absolute;left:0;bottom:-10px;width:100%;height:13px;color:#829fc7;pointer-events:none}
 .ink-circle svg{position:absolute;inset:-13% -12%;width:124%;height:135%;color:#799bc9;opacity:.75;pointer-events:none}
 .contact-doodle{width:115px;height:38px;color:#355278;transform:rotate(3deg);overflow:visible}
-@keyframes ink-arrive{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 @media(max-width:1000px){.hero-note.ink-doodle{width:185px;margin-right:0}.hero-note.ink-doodle svg{width:180px}}
 @media(max-width:700px){.hero-bottom{position:relative}.hero-note.ink-doodle{display:block;position:absolute;right:0;bottom:-12px;width:65px;transform:rotate(15deg);opacity:.65}.hero-note.ink-doodle svg{width:65px}.hero-note.ink-doodle>span{display:none}.hero-actions{padding-right:62px;gap:15px;flex-wrap:wrap}.contact-doodle{width:65px;height:29px}.ink-underline svg{bottom:-8px;height:10px}}
+
+/* Different pen gestures, revealed once by the shared scroll observer. */
+[data-doodle]{--draw-duration:1.2s}
+[data-doodle="underline"]{--draw-duration:.7s}
+[data-doodle="spark"]{--draw-duration:.5s}
+[data-doodle="orbit"]{--draw-duration:1s}
+[data-doodle="arrow"]{--draw-duration:1.3s}
+.doodle-pending path{stroke-dasharray:1;stroke-dashoffset:1}
+.doodle-visible path{animation:doodle-stroke var(--draw-duration) cubic-bezier(.45,0,.25,1) var(--stroke-delay,0s) forwards}
+@keyframes doodle-stroke{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.heading-spark{width:43px;height:43px;margin-left:14px;vertical-align:middle;transform:rotate(8deg)}
+.about-doodle{display:flex;align-items:center;gap:10px;margin-top:21px;color:#8da9cf;transform:rotate(-5deg);width:fit-content}
+.about-doodle svg{width:120px;height:58px;overflow:visible}.about-doodle>span{font:9px var(--mono);letter-spacing:.4px}
+.about-doodle+.about-stamp{margin-top:18px}
+@media(max-width:700px){.heading-spark{width:30px;height:30px;margin-left:8px}.about-doodle{margin-top:15px}.about-doodle svg{width:85px;height:42px}}
+@media(prefers-reduced-motion:reduce){.doodle-pending path{stroke-dashoffset:0}}
