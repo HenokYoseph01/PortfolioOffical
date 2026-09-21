@@ -77,3 +77,17 @@ body:focus-within .splash{display:none}
 @media(max-width:700px){.writing-card{padding:24px}.writing-card-body{display:block}.writing-card-body h2{font-size:31px}.writing-card-body .button{margin-top:23px}.writing-card-top .section-number{font-size:7px}.medium-wordmark{font-size:18px}.medium-wordmark svg{width:27px}.writing-card-footer{font-size:7px;letter-spacing:.5px}}
 @media(max-width:420px){.wordmark>span:last-child{display:none}nav{gap:16px}}
 
+
+/* Pen-like accents share the same blue ink as the rest of the page. */
+.ink-doodle{color:var(--accent);pointer-events:none}
+.ink-doodle svg path,.ink-doodle path,.ink-underline path,.ink-circle path{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.hero-note.ink-doodle{width:250px;transform:rotate(-6deg);color:#a3bbdf;margin-right:22px}
+.hero-note.ink-doodle svg{width:220px;overflow:visible}.hero-note .doodle-ghost{opacity:.18;stroke-width:1}.hero-note .doodle-draw{stroke-dasharray:1;animation:ink-arrive 1.4s ease-out 1.8s backwards}
+.hero-note .doodle-note{display:block;margin-top:10px;font-size:8px;letter-spacing:.5px;color:#859abb;transform:rotate(3deg)}
+.ink-underline,.ink-circle{position:relative;display:inline-block}
+.ink-underline svg{position:absolute;left:0;bottom:-10px;width:100%;height:13px;color:#829fc7;pointer-events:none}
+.ink-circle svg{position:absolute;inset:-13% -12%;width:124%;height:135%;color:#799bc9;opacity:.75;pointer-events:none}
+.contact-doodle{width:115px;height:38px;color:#355278;transform:rotate(3deg);overflow:visible}
+@keyframes ink-arrive{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@media(max-width:1000px){.hero-note.ink-doodle{width:185px;margin-right:0}.hero-note.ink-doodle svg{width:180px}}
+@media(max-width:700px){.hero-bottom{position:relative}.hero-note.ink-doodle{display:block;position:absolute;right:0;bottom:-12px;width:65px;transform:rotate(15deg);opacity:.65}.hero-note.ink-doodle svg{width:65px}.hero-note.ink-doodle>span{display:none}.hero-actions{padding-right:62px;gap:15px;flex-wrap:wrap}.contact-doodle{width:65px;height:29px}.ink-underline svg{bottom:-8px;height:10px}}
