@@ -14,7 +14,10 @@ await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceSc
 await call('Page.navigate',{url:'http://localhost:5173'});
 await new Promise(r => setTimeout(r,1900));
 await run('document.fonts.ready.then(() => true)');
+await run("new Promise(resolve => { const end = performance.now() + 4000; const poll = () => { if (document.querySelector('.splash').hidden || performance.now() > end) resolve(); else setTimeout(poll, 50); }; poll(); })");
 check('splash finishes and reveals the page',await run("getComputedStyle(document.querySelector('.splash')).visibility === 'hidden'"));
+await run("document.querySelector('.wordmark').focus(); document.activeElement.blur(); window.dispatchEvent(new Event('blur')); window.dispatchEvent(new Event('focus'))");
+check('splash stays dismissed after focus changes',await run("document.querySelector('.splash').hidden && getComputedStyle(document.querySelector('.splash')).display === 'none'"));
 check('splash cannot block interaction or screen readers',await run("document.querySelector('.splash').inert && document.querySelector('.splash').getAttribute('aria-hidden') === 'true' && getComputedStyle(document.querySelector('.splash')).pointerEvents === 'none'"));
 check('12 tools accessible without duplicate announcements',await run("document.querySelector('.tool-list:not([aria-hidden])').children.length === 12 && document.querySelectorAll('.tool-list[aria-hidden=true]').length === 1"));
 const scrollBefore = await run("document.querySelector('.tool-viewport').scrollLeft");await wait();
@@ -47,6 +50,8 @@ await fs.writeFile('/tmp/henok-desktop.png',Buffer.from((await call('Page.captur
 for (const slug of ['word-bucket','clearpath','chilluno','projecthub-bot','Chill-Anime-Vinyl','gym-landing','yt-tg-notification-bot','Channel-Sub-Manager']) {
  await run(`document.querySelector('a[href="#project/${slug}"]').focus(); document.querySelector('a[href="#project/${slug}"]').click()`);await wait();
  check(`${slug} details open`,await run('document.querySelector("dialog").open && document.querySelector("#dialog-title").textContent.length > 0'));
+ check(`${slug} does not replay splash`,await run("document.querySelector('.splash').hidden"));
+ check(`${slug} close label and icon aligned`,await run("(() => {const label=document.querySelector('.close-dialog span').getBoundingClientRect();const icon=document.querySelector('.close-dialog svg').getBoundingClientRect();return Math.abs((label.top+label.height/2)-(icon.top+icon.height/2)) < 1;})()"));
  check(`${slug} focus inside dialog`,await run('document.querySelector("dialog").contains(document.activeElement)'));
  await call('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await call('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await wait();
  check(`${slug} Escape closes`,await run('!document.querySelector("dialog").open'));
@@ -63,7 +68,8 @@ await run('document.querySelector(".close-dialog").click()');await wait();
 check('direct project link closes',await run('!document.querySelector("dialog").open'));
 await call('Emulation.setScriptExecutionDisabled',{value:true});
 await call('Page.navigate',{url:'http://localhost:5173/'});await new Promise(r=>setTimeout(r,900));
+await run("new Promise(resolve => { const end = performance.now() + 6000; const poll = () => { const header=document.querySelector('.header'); if ((header && getComputedStyle(header).display === 'flex') || performance.now() > end) resolve(); else setTimeout(poll, 50); }; poll(); })");
 check('page fully styled without JavaScript',await run("getComputedStyle(document.querySelector('.header')).display === 'flex' && getComputedStyle(document.body).backgroundColor === 'rgb(8, 15, 32)'"));
 await call('Emulation.setScriptExecutionDisabled',{value:false});
 check('no runtime errors',errors.length===0);
-console.log(JSON.stringify({results,errors},null,2));ws.close();
+console.log(JSON.stringify({passed:results.filter(r=>r.pass).length,failed:results.filter(r=>!r.pass),errors},null,2));ws.close();

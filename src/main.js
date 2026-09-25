@@ -1,3 +1,26 @@
+// Dismiss once per document, never restart when focus or visibility changes.
+const splash = document.querySelector('.splash');
+if (splash) {
+  let fallbackTimer;
+  const dismissSplash = () => {
+    splash.hidden = true;
+    clearTimeout(fallbackTimer);
+  };
+  splash.addEventListener('animationend', event => {
+    if (event.target === splash && event.animationName === 'splash-exit') dismissSplash();
+  });
+  document.addEventListener('focusin', dismissSplash, { once: true });
+  document.addEventListener('pointerdown', dismissSplash, { once: true, passive: true });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) dismissSplash();
+  });
+  window.addEventListener('blur', dismissSplash, { once: true });
+  window.addEventListener('pagehide', dismissSplash, { once: true });
+  window.addEventListener('pageshow', event => { if (event.persisted) dismissSplash(); });
+  fallbackTimer = setTimeout(dismissSplash, 1800);
+  if (document.hidden || document.activeElement !== document.body || matchMedia('(prefers-reduced-motion: reduce)').matches) dismissSplash();
+}
+
 const repo = 'https://github.com/HenokYoseph01/';
 const projects = [
   { slug: 'word-bucket', website: 'https://wordbucket.vercel.app/', screenshots: [{file:'WordBucket2.jpg',label:'Home & word lookup'},{file:'WordBucket1.jpg',label:'Review progress'}], name: 'WordBucket', category: 'Mobile application', summary: 'Keep the words you discover.', description: 'A vocabulary companion that lets you capture unfamiliar words while reading, save their meanings, and return to them through recall-based reviews.', stack: ['Flutter', 'Dart', 'Riverpod', 'Drift / SQLite', 'Dio', 'Workmanager', 'Android widgets'], details: ['Selected-text and share actions bring words into the app without a separate dictionary search.', 'Drift and SQLite retain saved words and review history locally. Riverpod connects state and feature logic.', 'Review reminders and a home-screen widget help bring saved words back into everyday life.'], note: 'Android-first application. New dictionary lookups need an internet connection; saved words remain local.' },
